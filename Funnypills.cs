@@ -112,7 +112,7 @@ public class FunnyPills : CustomItem
             case int n when (n < 100):
                 ev.Player.AddItem(ItemType.ParticleDisruptor);
 
-                if (!ev.Player.IsInventoryFull)
+                if (ev.Player.IsInventoryFull)
                 {
                     ev.Player.Broadcast(5, "Non hai ricevuto l'item, hai l'inventario full!");
                     return;
