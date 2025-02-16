@@ -8,7 +8,7 @@ using CustomItems1.SCP094IT;
 using UnityEngine;
 using Exiled.Events.EventArgs.Player;
 
-namespace TrollGranate;
+namespace FunnyPills;
     public class Class1 : Plugin<CustomItem2Config>
 {
     public static Class1 Instance;
@@ -73,7 +73,7 @@ public class FunnyPills : CustomItem
     }
     private void OnUsingItem(Exiled.Events.EventArgs.Player.UsingItemEventArgs ev)
     {
-        if (ev.Player.CurrentItem == null || ev.Player.CurrentItem.Type != ItemType.Adrenaline)
+        if (ev.Player.CurrentItem == null || ev.Player.CurrentItem.Type != ItemType.SCP500)
             return;
 
         int chance = Random.Range(0, 101);
@@ -82,11 +82,6 @@ public class FunnyPills : CustomItem
         {
             case int n when (n < 20):
                 ev.Player.Scale = new Vector3(2.0f, 2.0f, 2.0f);
-
-                if (ev.Player.IsDead)
-                {
-                    ev.Player.Scale = Vector3.one;
-                }
                 break;
 
             case int n when (n < 40):
@@ -110,12 +105,21 @@ public class FunnyPills : CustomItem
                 break;
 
             case int n when (n < 100):
-                ev.Player.AddItem(ItemType.ParticleDisruptor);
 
-                if (ev.Player.IsInventoryFull)
+                if (ev.Player.Inventory.UserInventory.Items.Count <= 6)
                 {
-                    ev.Player.Broadcast(5, "Non hai ricevuto l'item, hai l'inventario full!");
-                    return;
+                    ev.Player.AddItem(ItemType.MicroHID);
+                    ev.Player.AddItem(ItemType.ParticleDisruptor);
+                }
+
+                if (ev.Player.Inventory.UserInventory.Items.Count <= 7)
+                {
+                    ev.Player.AddItem(ItemType.ParticleDisruptor);
+                    ev.Player.Broadcast(5, "Pultroppo avevi solo uno slot libero! hai ricevuto solaemente la ParticleDiscruptor");
+                }
+                if (ev.Player.Inventory.UserInventory.Items.Count <= 8)
+                {
+                    ev.Player.Broadcast(5, "Non hai ricevuto niente perchè avevi l'inventario pieno! ti sei perso una Micro e una ParticleDiscruptor!");
                 }
                 break;
         }
@@ -123,5 +127,6 @@ public class FunnyPills : CustomItem
     private void OnDied(DiedEventArgs ev)
     {
         ev.Player.DisableEffect(EffectType.MovementBoost);
+        ev.Player.Scale = Vector3.one;
     }
 }
