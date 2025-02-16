@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using Exiled.CustomItems.API.Features;
 using Exiled.API.Features;
 using Exiled.API.Features.Attributes;
@@ -36,11 +36,11 @@ namespace TrollGranate;
     }
 }
 
-[CustomItem(ItemType.Adrenaline)]
+[CustomItem(ItemType.SCP500)]
 public class FunnyPills : CustomItem
 {
-    public override ItemType Type { get; set; } = ItemType.Adrenaline;
-    public override uint Id { get; set; } = 1;
+    public override ItemType Type { get; set; } = ItemType.SCP500;
+    public override uint Id { get; set; } = 52;
 
     public override string Name { get; set; } = "Pillole divertenti!";
 
@@ -62,18 +62,12 @@ public class FunnyPills : CustomItem
     protected override void SubscribeEvents()
     {
         Exiled.Events.Handlers.Player.UsingItem += OnUsingItem;
-        Exiled.Events.Handlers.Map.PickupAdded += OnPickupAdded;
-        Exiled.Events.Handlers.Player.PickingUpItem += OnPickingUpItem;
-        Exiled.Events.Handlers.Player.ChangingItem += OnChangingItem;
         Exiled.Events.Handlers.Player.Died += OnDied;
         base.SubscribeEvents();
     }
     protected override void UnsubscribeEvents()
     {
         Exiled.Events.Handlers.Player.UsingItem -= OnUsingItem;
-        Exiled.Events.Handlers.Map.PickupAdded -= OnPickupAdded;
-        Exiled.Events.Handlers.Player.PickingUpItem -= OnPickingUpItem;
-        Exiled.Events.Handlers.Player.ChangingItem -= OnChangingItem;
         Exiled.Events.Handlers.Player.Died -= OnDied;
         base.UnsubscribeEvents();
     }
@@ -86,31 +80,48 @@ public class FunnyPills : CustomItem
 
         switch (chance)
         {
-            case int n when (n < 10):
+            case int n when (n < 20):
                 ev.Player.Scale = new Vector3(2.0f, 2.0f, 2.0f);
 
-                if (!ev.Player.IsDead)
+                if (ev.Player.IsDead)
                 {
                     ev.Player.Scale = Vector3.one;
                 }
                 break;
 
+            case int n when (n < 40):
+                ev.Player.Broadcast(5, "Hai ricevuto un'A7!!");
+                ev.Player.AddItem(ItemType.GunA7);
+
+                if (ev.Player.IsInventoryFull)
+                {
+                    ev.Player.Broadcast(5, "Non hai ricevuto l'item, hai l'inventario full!");
+                    return;
+                }
+
+                break;
+            case int n when (n < 60):
+                ev.Player.EnableEffect(EffectType.MovementBoost, 10f);
+                break;
+
+            case int n when (n < 80):
+                ev.Player.Broadcast(5, "Hai ricevuto + 50Hp");
+                ev.Player.AddAhp(50f);
+                break;
+
+            case int n when (n < 100):
+                ev.Player.AddItem(ItemType.ParticleDisruptor);
+
+                if (!ev.Player.IsInventoryFull)
+                {
+                    ev.Player.Broadcast(5, "Non hai ricevuto l'item, hai l'inventario full!");
+                    return;
+                }
+                break;
         }
     }
     private void OnDied(DiedEventArgs ev)
     {
-    }
-
-
-    private void OnPickingUpItem(Exiled.Events.EventArgs.Player.PickingUpItemEventArgs ev)
-    {
-    }
-
-    private void OnPickupAdded(Exiled.Events.EventArgs.Map.PickupAddedEventArgs ev)
-    {
-    }
-
-    private void OnChangingItem(Exiled.Events.EventArgs.Player.ChangingItemEventArgs ev)
-    {
+        ev.Player.DisableEffect(EffectType.MovementBoost);
     }
 }
