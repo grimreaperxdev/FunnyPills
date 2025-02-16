@@ -88,7 +88,7 @@ public class FunnyPills : CustomItem
                 ev.Player.Broadcast(5, "Hai ricevuto un'A7!!");
                 ev.Player.AddItem(ItemType.GunA7);
 
-                if (ev.Player.IsInventoryFull)
+                if (ev.Player.Inventory.UserInventory.Items.Count <= 8)
                 {
                     ev.Player.Broadcast(5, "Non hai ricevuto l'item, hai l'inventario full!");
                     return;
